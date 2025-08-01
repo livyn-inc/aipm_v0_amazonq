@@ -1,0 +1,51 @@
+# =================================================
+# Amazon Q Developer版 AIPM System .gitignore
+# Note: Common files (*.log, .DS_Store, etc.)
+#       are handled by global gitignore
+# =================================================
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+
+# Cache
+.cache/
+*.cache
+
+# Personal/private content
+personal/
+private/
+*.secret
+
+# Amazon Q Developer specific
+.amazonq/cache/
+.aws/credentials
+.aws/config
+!.aws/amazonq/prompts/
+
+# VS Code specific (if not in global gitignore)
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Project-specific
+# (Add project-specific patterns here)
+
+# Backup files created by setup script
+*.backup
+*.bak
+
+# Flow working files (keep structure, exclude content)
+Flow/*/
+!Flow/templates/
+!Flow/README.md
+
+# Large generated files
+*.log
+*.out
+*.err
+
+# OS specific
+.DS_Store
+Thumbs.db
