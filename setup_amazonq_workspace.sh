@@ -16,13 +16,17 @@
 
 set -e
 
-# 色の定義
+# 色の定義（文字化け対策）
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
+
+# 文字エンコーディング設定
+export LANG=ja_JP.UTF-8
+export LC_ALL=ja_JP.UTF-8
 
 # ログ関数
 log_info() {
@@ -225,6 +229,14 @@ adapt_rules_for_amazonq() {
     
     log_success "パス設定を調整しました"
   fi
+  
+  # MDCファイルをMDファイルに変換（Amazon Q Developer用）
+  log_info "MDCファイルをMDファイルに変換中..."
+  find "$rules_dir" -name "*.mdc" -type f | while read -r mdc_file; do
+    md_file="${mdc_file%.mdc}.md"
+    cp "$mdc_file" "$md_file"
+    log_success "変換完了: $(basename "$mdc_file") -> $(basename "$md_file")"
+  done
   
   # Amazon Q Developer用の追加ルールファイル作成
   cat > "$rules_dir/amazonq_integration.mdc" << 'EOF'
@@ -473,10 +485,10 @@ main() {
   fi
   
   log_amazonq "=========================================="
-  log_amazonq "Amazon Q Developer用 AIPMワークスペース構築"
+  log_amazonq "Amazon Q Developer AIPM Workspace Setup"
   log_amazonq "=========================================="
-  log_info "作業ディレクトリ: $(pwd)"
-  log_info "設定ファイル: $config_file"
+  log_info "Working Directory: $(pwd)"
+  log_info "Config File: $config_file"
   
   # デフォルト設定を読み込み
   setup_default_config
@@ -487,15 +499,15 @@ main() {
   # 確認
   if [ "$AUTO_APPROVE" != "true" ]; then
     echo ""
-    log_info "以下の設定でワークスペースを作成します："
-    log_info "  作業ディレクトリ: $(pwd)"
+    log_info "Creating workspace with following settings:"
+    log_info "  Working Directory: $(pwd)"
     log_info "  Amazon Q Rules: .amazonq/rules/"
     log_info "  Prompt Library: $AMAZONQ_PROMPT_LIBRARY_DIR"
     echo ""
-    read -p "続行しますか？ (y/N): " -n 1 -r
+    read -p "Continue? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      log_info "キャンセルされました"
+      log_info "Cancelled"
       exit 0
     fi
   fi
@@ -507,7 +519,7 @@ main() {
   create_amazonq_guide
   
   log_success "=========================================="
-  log_success "Amazon Q Developer用ワークスペース構築完了！"
+  log_success "Amazon Q Developer Workspace Setup Complete!"
   log_success "=========================================="
   echo ""
   log_amazonq "次の手順:"
